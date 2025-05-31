@@ -83,9 +83,9 @@ const fetchPosts = async () => {
     // totalCount.value = response.headers['x-total-count'];
     // x-total-count
     const headerCount = response.headers['x-total-count'];
-    totalCount.value = headerCount ? Number(headerCount) : 0;
-    // totalCount.value = response.headers.get('x-total-count');
-    // const pageCo?unt = computed(() => totalCount.value / params.value._limit);
+    // totalCount.value = headerCount ? Number(headerCount) : 0;
+    totalCount.value = response.headers.get('x-total-count');
+    // const pageCount = computed(() => totalCount.value / params.value._limit);
   } catch (err) {
     console.log('error: ', err);
     error.value = err;
