@@ -84,6 +84,7 @@ const pageCount = computed(() => {
 //     posts.value = response.data;
 //     // const response = await fetch('/your-api');
 
+<<<<<<< HEAD
 //     // totalCount.value = response.headers['x-total-count'];
 //     // x-total-count
 //     const headerCount = response.headers['x-total-count'];
@@ -97,6 +98,21 @@ const pageCount = computed(() => {
 //     loading.value = false;
 //   }
 // };
+=======
+    // totalCount.value = response.headers['x-total-count'];
+    // x-total-count
+    const headerCount = response.headers['x-total-count'];
+    // totalCount.value = headerCount ? Number(headerCount) : 0;
+    totalCount.value = response.headers.get('x-total-count');
+    // const pageCount = computed(() => totalCount.value / params.value._limit);
+  } catch (err) {
+    console.log('error: ', err);
+    error.value = err;
+  } finally {
+    loading.value = false;
+  }
+};
+>>>>>>> feature/2025-05-31-composable
 
 // watchEffect(fetchPosts);
 const goPage = id => {

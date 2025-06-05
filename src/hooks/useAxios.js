@@ -18,7 +18,7 @@ export const useAxios = (url, config = {}, options = {}) => {
     error.value = null;
     loading.value = true;
 
-    axios(url, { .axios.axios.defaultConfig,...config, params: unref(params) })
+    axios(url, { ...defaultConfig,...config, params: unref(params) })
       .then(res => {
         response.value = res;
         data.value = res.data;
@@ -39,7 +39,7 @@ export const useAxios = (url, config = {}, options = {}) => {
   if (isRef(params)){
 
     watchEffect(execute);
-  }else{
+  }else if{
       watchEffect(execute);
   }else{
   }
