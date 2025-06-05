@@ -7,7 +7,7 @@
       <input
         :value="title"
         v-focus
-        @input="$emit('update: title', $event.target.value)"
+        @input="$emit('update:title', $event.target.value)"
         type="text"
         class="form-control"
         id="title"
@@ -31,17 +31,17 @@
 </template>
 
 <script setup>
-const vFocus = {
-  mounted: el => {
-    el.focus();
-  },
-};
+// const vFocus = {
+//   mounted: el => {
+//     el.focus();
+//   },
+// };
 defineProps({ title: String, content: String });
 
 /**
  * 다중 v-model을 구현하기 위해서는 defineEmits 해서 update : title 이렇게 정의해줘야 된다.
  */
-defineEmits(['update: title', 'update:content']);
+defineEmits(['update:title', 'update:content']);
 </script>
 
 <style lang="scss" scoped></style>

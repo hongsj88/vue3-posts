@@ -53,9 +53,10 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { getPostById, deletePost } from '@/api/posts';
+import { useAxios } from '@/hooks/useAxios';
 import { ref } from 'vue';
-const error = ref(null);
-const loading = ref(false);
+// const error = ref(null);
+// const loading = ref(false);
 
 const props = defineProps({
   id: [String, Number],
@@ -72,33 +73,16 @@ const props = defineProps({
  * 단) 객체할당 불가능
  */
 
-const router = useRouter();
-const post = ref({});
-const fetchPost = async () => {
-  try {
-    loading.value = true;
-    console.log('detail id', props.id, typeof props.id);
-    // console.log('type of', typeof props.id);
-    const { data } = await getPostById(props.id);
-    console.log('fetchbyid data::', data);
-    // console.log('-------1 props.id', typeof props.id);
-    // console.log('-------2 props.id', props.id);
-    // console.log('data', data);
-    setPost(data);
-    // post.value = { ...data };
-  } catch (err) {
-    error.value = err;
-    console.log(error);
-  } finally {
-    loading.value = false;
-  }
-};
-const setPost = ({ title, content, createdAt }) => {
-  post.value.title = title;
-  post.value.content = content;
-  post.value.createdAt = createdAt;
-};
-fetchPost();
+// const router = useRouter();
+// const post = ref({});
+const { error, loading, data: post } = useAxio(`/posts/${props.id}`);
+
+// const setPost = ({ title, content, createdAt }) => {
+//   post.value.title = title;
+//   post.value.content = content;
+//   post.value.createdAt = createdAt;
+// };
+// fetchPost();
 
 const removeError = ref(null);
 const removeLoading = ref(false);

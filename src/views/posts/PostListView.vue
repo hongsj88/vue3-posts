@@ -50,18 +50,15 @@ import Postitem from '@/components/posts/PostItem.vue';
 import PostDetailView from '@/views/posts/PostDetailView.vue';
 import PostFilter from '@/components/posts/PostFilter.vue';
 import PostModal from '@/components/posts/PostModal.vue';
-import { getPosts } from '@/api/posts';
-import { ref, computed, watchEffect } from 'vue';
+import { useAxios } from '@/hooks/useAxios';
+
+// import { getPosts } from '@/api/posts';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const posts = ref([]);
-const error = ref(null);
-const loading = ref(false);
 
 // pagination
-const totalCount = ref(0);
-// const pageCount = ref(0);
 const params = ref({
   _sort: 'createdAt',
   _order: 'desc',
@@ -69,32 +66,39 @@ const params = ref({
   _limit: 9,
   title_like: '',
 });
+const {
+  response,
+  data: posts,
+  error,
+  loading,
+} = useAxios('/posts', { method: 'get', params });
+const totalCount = computed(() => response.value.headers['x-total-count']);
 const pageCount = computed(() => {
   return Math.ceil(totalCount.value / params.value._limit);
 });
-const fetchPosts = async () => {
-  try {
-    loading.value = true;
-    // const { data, response.headers } = await getPosts(params.value);
-    const response = await getPosts(params.value);
-    posts.value = response.data;
-    // const response = await fetch('/your-api');
+// const fetchPosts = async () => {
+//   try {
+//     loading.value = true;
+//     // const { data, response.headers } = await getPosts(params.value);
+//     const response = await getPosts(params.value);
+//     posts.value = response.data;
+//     // const response = await fetch('/your-api');
 
-    // totalCount.value = response.headers['x-total-count'];
-    // x-total-count
-    const headerCount = response.headers['x-total-count'];
-    totalCount.value = headerCount ? Number(headerCount) : 0;
-    // totalCount.value = response.headers.get('x-total-count');
-    // const pageCo?unt = computed(() => totalCount.value / params.value._limit);
-  } catch (err) {
-    console.log('error: ', err);
-    error.value = err;
-  } finally {
-    loading.value = false;
-  }
-};
+//     // totalCount.value = response.headers['x-total-count'];
+//     // x-total-count
+//     const headerCount = response.headers['x-total-count'];
+//     totalCount.value = headerCount ? Number(headerCount) : 0;
+//     // totalCount.value = response.headers.get('x-total-count');
+//     // const pageCo?unt = computed(() => totalCount.value / params.value._limit);
+//   } catch (err) {
+//     console.log('error: ', err);
+//     error.value = err;
+//   } finally {
+//     loading.value = false;
+//   }
+// };
 
-watchEffect(fetchPosts);
+// watchEffect(fetchPosts);
 const goPage = id => {
   router.push({
     name: 'PostDetail',
