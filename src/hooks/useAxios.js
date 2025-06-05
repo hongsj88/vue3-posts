@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ref, unref, watchEffect } from 'vue';
+import { isRef, ref, unref, watchEffect } from 'vue';
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 const defaultConfig = {
@@ -10,7 +10,7 @@ export const useAxios = (url, config = {}, options = {}) => {
   const data = ref(null);
   const error = ref(null);
   const loading = ref(false);
-  const {onSuccess, onError } = options;
+  const { onSuccess, onError } = options;
 
   const { params } = config;
   const execute = () => {
@@ -18,17 +18,17 @@ export const useAxios = (url, config = {}, options = {}) => {
     error.value = null;
     loading.value = true;
 
-    axios(url, { ...defaultConfig,...config, params: unref(params) })
+    axios(url, { ...defaultConfig, ...config, params: unref(params) })
       .then(res => {
         response.value = res;
         data.value = res.data;
-        if (onSuccess){
+        if (onSuccess) {
           onSuccess(res);
         }
       })
       .catch(err => {
         error.value = err;
-        if (onError){
+        if (onError) {
           onError(err);
         }
       })
@@ -36,12 +36,10 @@ export const useAxios = (url, config = {}, options = {}) => {
         loading.value = false;
       });
   };
-  if (isRef(params)){
-
+  if (isRef(params)) {
     watchEffect(execute);
-  }else if{
-      watchEffect(execute);
-  }else{
+  } else {
+    watchEffect(execute);
   }
   return {
     // aysnc, await를 안 기다려도 안되는 이유는 이미 반응형으로 연결되어 있기때문문
