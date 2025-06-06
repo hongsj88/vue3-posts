@@ -7,6 +7,7 @@
     <hr class="my-4" />
 
     <h2>{{ post.title }}</h2>
+    <p>id: {{ props.id }}, isOdd: {{ isOdd }}</p>
     <p>{{ post.content }}</p>
     <p class="text-muted">
       {{ $dayjs(post.createdAt).format('YYYY.MM.DD HH:mm:ss') }}
@@ -52,16 +53,23 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { getPostById, deletePost } from '@/api/posts';
+// import { deletePost } from '@/api/posts';
 import { useAxios } from '@/hooks/useAxios';
-import { ref } from 'vue';
+import { useAlert } from '@/composables/alert';
+import { useNumber } from '@/composables/number';
+import { computed, toRef, toRefs } from 'vue';
+
+const { vAlert, vSuccess } = useAlert();
 // const error = ref(null);
 // const loading = ref(false);
 
 const props = defineProps({
   id: [String, Number],
 });
-
+// const isRef = toRef(props, 'id');
+// toRef함수와 toRefs함수는 반응형 객체의 속성을 반응형을 유지한 채 할당하고 싶을 때 사용한다!
+const { id: isRef } = toRefs(props);
+const { isOdd } = useNumber(isRef);
 // console.log('----props.id', props.id);
 /**
  * ref
@@ -75,32 +83,36 @@ const props = defineProps({
 
 // const router = useRouter();
 // const post = ref({});
-const { error, loading, data: post } = useAxio(`/posts/${props.id}`);
+// const url = computed(() => `/posts/${props.id}`);
+// console.log('url: ', url.value);
+// const { error, loading, data: post } = useAxios(url);
+const router = useRouter();
+const url = computed(() => `/posts/${props.id}`);
+const { error, loading, data: post } = useAxios(url);
 
-// const setPost = ({ title, content, createdAt }) => {
-//   post.value.title = title;
-//   post.value.content = content;
-//   post.value.createdAt = createdAt;
-// };
-// fetchPost();
-
-const removeError = ref(null);
-const removeLoading = ref(false);
-
+const {
+  error: removeError,
+  loading: removeLoading,
+  execute,
+} = useAxios(
+  `/posts/${props.id}`,
+  { method: 'delete' },
+  {
+    immediate: false,
+    onSuccess: () => {
+      vSuccess('삭제가가 완료되었습니다!!!');
+      router.push({ name: 'PostList' });
+    },
+    onError: err => {
+      vAlert(err.message);
+    },
+  },
+);
 const remove = async () => {
-  try {
-    if (confirm('삭제하시겠습니까?') === false) {
-      return;
-    }
-    removeLoading.value = true;
-    await deletePost(props.id);
-    router.push({ name: 'PostList' });
-  } catch (err) {
-    console.log(err);
-    error.value = err;
-  } finally {
-    removeLoading.value = false;
+  if (confirm('삭제하시겠습니까?') === false) {
+    return;
   }
+  execute();
 };
 const goListPage = () => router.push({ name: 'PostList' });
 const goEditPage = () =>

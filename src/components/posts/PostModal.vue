@@ -3,7 +3,7 @@
     <template #default>
       <div class="row g-3">
         <div class="col-3 text-muted">제목</div>
-        <div class="col-9">{{ modalTitle }}</div>
+        <div class="col-9">{{ title }}</div>
         <div class="col-3 text-muted">내용</div>
         <div class="col-9">{{ content }}</div>
         <div class="col-3 text-muted">등록일</div>

@@ -42,8 +42,8 @@ import PostForm from '@/components/posts/PostForm.vue';
 import { useAlert } from '@/composables/alert';
 import { useAxios } from '@/hooks/useAxios';
 
-const error = ref(null);
-const loading = ref(false);
+// const error = ref(null);
+// const loading = ref(false);
 
 const { alerts, vAlert, vSuccess } = useAlert();
 
@@ -52,24 +52,28 @@ const form = ref({
   title: null,
   content: null,
 });
-
+// 코드	의미
+// ...form.value	form.value 객체 안의 모든 속성을 펼쳐서 복사
+// { ...form.value, createdAt: Date.now() }	form.value 복사 + createdAt 필드 추가
+// 목적	원본 객체는 건드리지 않고, 서버에 보낼 새로운 요청 객체 만들기
+const { error, loading, execute } = useAxios(
+  '/posts',
+  {
+    method: 'post',
+  },
+  {
+    immediate: false,
+    onSuccess: () => {
+      router.push({ name: 'PostList' });
+      vSuccess('등록이 완료되었습니다.');
+    },
+    onError: err => {
+      vAlert(err.message);
+    },
+  },
+);
 const save = async () => {
-  ({ error: error.value, loading: loading.value } = useAxios(
-    '/posts',
-    {
-      method: 'post',
-      data: { ...form.value, createdAt: Date.now() },
-    },
-    {
-      onSuccess: () => {
-        router.push({ name: 'PostList' });
-        vSuccess('등록이 완료되었습니다.');
-      },
-      onError: err => {
-        vAlert(err.message);
-      },
-    },
-  ));
+  execute({ ...form.value, createdAt: Date.now() });
 };
 
 // const save = async () => {

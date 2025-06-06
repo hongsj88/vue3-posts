@@ -18,6 +18,7 @@
             :createdAt="item.createdAt"
             @click="goPage(item.id)"
             @modal="openModal(item)"
+            @preview="selectPreview(item.id)"
           ></Postitem>
         </template>
       </AppGrid>
@@ -37,9 +38,9 @@
       />
     </Teleport>
     <hr class="my-5" />
-    <template v-if="posts && posts.length > 0">
+    <template v-if="previewId">
       <AppCard>
-        <PostDetailView :id="posts[0].id"></PostDetailView>
+        <PostDetailView :id="previewId"></PostDetailView>
       </AppCard>
     </template>
   </div>
@@ -57,49 +58,34 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const previewId = ref(null);
+const selectPreview = id => {
+  previewId.value = id;
+};
 
 // pagination
 const params = ref({
   _sort: 'createdAt',
   _order: 'desc',
   _page: 1,
-  _limit: 9,
+  _limit: 3,
   title_like: '',
 });
+// 페이징을 위해서 params 넘김김
 const {
   response,
   data: posts,
   error,
   loading,
 } = useAxios('/posts', { method: 'get', params });
+
 const totalCount = computed(() => response.value.headers['x-total-count']);
 const pageCount = computed(() => {
   return Math.ceil(totalCount.value / params.value._limit);
 });
-// const fetchPosts = async () => {
-//   try {
-//     loading.value = true;
-//     // const { data, response.headers } = await getPosts(params.value);
-//     const response = await getPosts(params.value);
-//     posts.value = response.data;
-//     // const response = await fetch('/your-api');
 
-//     // totalCount.value = response.headers['x-total-count'];
-//     // x-total-count
-//     const headerCount = response.headers['x-total-count'];
-//     totalCount.value = headerCount ? Number(headerCount) : 0;
-//     // totalCount.value = response.headers.get('x-total-count');
-//     // const pageCo?unt = computed(() => totalCount.value / params.value._limit);
-//   } catch (err) {
-//     console.log('error: ', err);
-//     error.value = err;
-//   } finally {
-//     loading.value = false;
-//   }
-// };
-
-// watchEffect(fetchPosts);
 const goPage = id => {
+  console.log('id', id);
   router.push({
     name: 'PostDetail',
     params: { id },
