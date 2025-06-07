@@ -3,14 +3,18 @@
     <h2>게시글 목록</h2>
     <PostFilter
       v-model:title="params.title_like"
-      v-model:limit="params._limit"
+      :limit="params._limit"
+      @update:limit="changeLimit"
     ></PostFilter>
 
     <hr class="my-4" />
     <AppLoading v-if="loading" />
     <AppError v-else-if="error" :message="error.message" />
+    <template v-else-if="!isExist">
+      <p class="text-center py-5 text-muted">No Results</p>
+    </template>
     <template v-else>
-      <AppGrid :items="posts">
+      <AppGrid :items="posts" col-class="col-12 col-md-6 col-lg-4">
         <template v-slot="{ item }">
           <Postitem
             :title="item.title"
@@ -68,9 +72,13 @@ const params = ref({
   _sort: 'createdAt',
   _order: 'desc',
   _page: 1,
-  _limit: 3,
+  _limit: 6,
   title_like: '',
 });
+const changeLimit = value => {
+  params.value._limit = value;
+  params.value._page = 1;
+};
 // 페이징을 위해서 params 넘김김
 const {
   response,
@@ -78,7 +86,7 @@ const {
   error,
   loading,
 } = useAxios('/posts', { method: 'get', params });
-
+const isExist = computed(() => posts.value && posts.value.length);
 const totalCount = computed(() => response.value.headers['x-total-count']);
 const pageCount = computed(() => {
   return Math.ceil(totalCount.value / params.value._limit);

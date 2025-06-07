@@ -10,6 +10,7 @@ import NestedView from '@/views/nested/NestedView.vue';
 import NestedOneView from '@/views/nested/NestedOneView.vue';
 import NestedTwoView from '@/views/nested/NestedTwoView.vue';
 import NestedHomeView from '@/views/nested/NestedHomeView.vue';
+import MyPage from '@/views/MyPage.vue';
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -39,12 +40,36 @@ const routes = [
       { path: 'Two', name: 'NestedTwo', component: NestedTwoView },
     ],
   },
+  {
+    path: '/my',
+    name: 'MyPage',
+    component: MyPage,
+    beforeEnter: [removeQueryString],
+    // beforeEnter:(to, from) {
+    //   // console.log('to', to);
+    //   // console.log('from', from);
+    //   // return { name: 'home' };
+    //   console.log(to.query);
+    // },
+  },
 ];
+function removeQueryString(to) {
+  if (Object.keys(to.query).length > 0) {
+    return { path: to.path, query: {} };
+  }
+}
 
 const router = createRouter({
   history: createWebHistory('/'),
   routes,
 });
-
+// router.beforeEach((to, from) => {
+//   console.log('to', to);
+//   console.log('from', from);
+//   if (to.name === 'MyPage') {
+//     // return false;
+//     return { name: 'home' };
+//   }
+// });
 export default router;
 console.log('test');
